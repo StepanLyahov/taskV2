@@ -1,5 +1,6 @@
 package com.test.test.model;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,8 +11,7 @@ import javax.persistence.Id;
 import java.util.Date;
 
 @Entity
-@Getter
-@Setter
+@Data
 public class Users {
 
     @Id
@@ -40,16 +40,12 @@ public class Users {
 
     public Users() { }
 
-    @Override
-    public String toString() {
-        return
-                "id=" + id +
-                        ", name='" + name + '\'' +
-                        ", secondname='" + secondname + '\'' +
-                        ", email='" + email + '\'' +
-                        ", uriImage='" + uriImage + '\'' +
-                        ", status='" + status + '\'' +
-                        ", timeChange=" + timeChange;
+    public Users(String name, String secondname, String email, String uriImage, String status, Date timeChange) {
+        this.name = name;
+        this.secondname = secondname;
+        this.email = email;
+        this.uriImage = uriImage;
+        this.status = status;
+        this.timeChange = timeChange;
     }
-
 }

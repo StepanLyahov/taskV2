@@ -22,13 +22,7 @@ import java.util.List;
 
 
 @Controller
-public class ControllerUser {
-    public static String uploadDirectory = System.getProperty("user.dir")+"/uploads";
-
-    private int time = 1000;
-
-    @Autowired
-    UsersRepository usersRepository;
+public class ControllerUser extends ControllerMain {
 
     @GetMapping("/main")
     public String mainn(Model model) {
@@ -38,7 +32,18 @@ public class ControllerUser {
 
     @GetMapping(value = "/all")
     public String all(Model model) {
-        model.addAttribute("list", listToString(usersRepository.findAll()));
+        //model.addAttribute("list", listToString(usersRepository.findAll()));
+
+        List<String> usersStr = new ArrayList<>();
+
+        List<Users> list = usersRepository.findAll();
+
+        for (Users u: list) {
+            usersStr.add(u.toString());
+        }
+
+
+        model.addAttribute("list", usersStr);
         return "all";
     }
 
@@ -50,14 +55,7 @@ public class ControllerUser {
             e.printStackTrace();
         }
 
-        Users users = new Users();
-        users.setName(name);
-        users.setSecondname(secondname);
-        users.setEmail(email);
-        users.setStatus("");
-        users.setTimeChange(null);
-        users.setUriImage("defailt_image");
-
+        Users users = new Users(name,secondname,email, "defailt_image", "", null);
         usersRepository.save(users);
 
         model.addAttribute("name", users.getId());
@@ -121,93 +119,5 @@ public class ControllerUser {
         return "setUser";
     }
 
-    @GetMapping("/loadImage")
-    public String loadImaage(Model model) {
-        return "loadImage";
-    }
-
-    @PostMapping("/loadImage")
-    public String upload(Model model, @RequestParam("files") MultipartFile[] files) {
-
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-        StringBuilder fileNames = new StringBuilder();
-        for (MultipartFile file : files) {
-            Path fileNameAndPath = Paths.get(uploadDirectory, file.getOriginalFilename());
-            fileNames.append(file.getOriginalFilename()+" ");
-            try {
-                Files.write(fileNameAndPath, file.getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        model.addAttribute("name", "URI:  " + uploadDirectory + "/" + fileNames.toString());
-
-        return "loadImage";
-    }
-
-    @GetMapping("/statistics")
-    public String getStatistics(Model model) {
-        model.addAttribute("result", "");
-        return "statistics";
-    }
-
-    @PostMapping(value = "/statistics")
-    public String postStatistics(@RequestParam String status, @RequestParam String date, Model model) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if (status.equals("") && date.equals("")) { // если фильтр пришёл пустой, то просто выводим всех пользователей
-            model.addAttribute("result", listToString(usersRepository.findAll()));
-        } else if (!status.equals("") && date.equals("")) { // если статус присутствует, а время нет, то просто выводим все пользовтелей с этим статусом
-            model.addAttribute("result", listToString(usersRepository.findByStatus(status)));
-        } else {
-            DateFormat dateForm = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            try {
-                List<Users> newList = new ArrayList<>();
-                Date currentDate = dateForm.parse(date); // получили текущее время запроса
-                //симулируем долгий запрос
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                List<Users> usersList = usersRepository.findByTimeChangeGreaterThan(currentDate);
-
-                for (Users users : usersList) {
-                    if (users.getStatus().equals(status))
-                        newList.add(users);
-                }
-                model.addAttribute("result" , listToString(newList));
-
-
-            } catch (ParseException e) {
-                model.addAttribute("result" , "Введён неверный тип даты");
-                return "statistics";
-            }
-        }
-
-        return "statistics";
-    }
-
-    private String listToString(List<Users> list) {
-        String res;
-        if (list.size() > 0) {
-            res = "";
-            for (Users u : list) res = res + u  + " ";
-        } else
-            res = "Пусто";
-
-        return  res;
-    }
 }
 

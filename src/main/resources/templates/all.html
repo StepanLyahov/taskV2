@@ -6,7 +6,11 @@
 </head>
 <body>
 <p>Список пользователей в БД</p>
-<p th:text="${list}"/>
+
+<th:block th:each="user : ${list}">
+    <li th:utext="${user}">..</li>
+</th:block>
+
 <a href="/main">Домой</a>
 </body>
 </html>
