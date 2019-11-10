@@ -32,18 +32,7 @@ public class ControllerUser extends ControllerMain {
 
     @GetMapping(value = "/all")
     public String all(Model model) {
-        //model.addAttribute("list", listToString(usersRepository.findAll()));
-
-        List<String> usersStr = new ArrayList<>();
-
-        List<Users> list = usersRepository.findAll();
-
-        for (Users u: list) {
-            usersStr.add(u.toString());
-        }
-
-
-        model.addAttribute("list", usersStr);
+        model.addAttribute("list", usersRepository.findAll().stream().map(u -> u.toString()));
         return "all";
     }
 
@@ -78,7 +67,6 @@ public class ControllerUser extends ControllerMain {
         }
 
         Users users = usersRepository.getOne(id);
-
         model.addAttribute("name", (users == null) ? "Пользовтель не найден." : users);
 
         return "getUser";

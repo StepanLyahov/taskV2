@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class ControllerStatistics  extends ControllerMain{
@@ -31,14 +32,13 @@ public class ControllerStatistics  extends ControllerMain{
             e.printStackTrace();
         }
 
-        if (status.equals("") && date.equals("")) { // если фильтр пришёл пустой, то просто выводим всех пользователей
-            model.addAttribute("result", listToString(usersRepository.findAll()));
-        } else if (!status.equals("") && date.equals("")) { // если статус присутствует, а время нет, то просто выводим все пользовтелей с этим статусом
-            model.addAttribute("result", listToString(usersRepository.findByStatus(status)));
+        if (status.isEmpty() && date.isEmpty()) { // если фильтр пришёл пустой, то просто выводим всех пользователей
+            model.addAttribute("result", usersRepository.findAll().stream().map(u -> u.toString()));
+        } else if (!status.isEmpty() && date.isEmpty()) { // если статус присутствует, а время нет, то просто выводим все пользовтелей с этим статусом
+            model.addAttribute("result", usersRepository.findByStatus(status).stream().map(u -> u.toString()));
         } else {
             DateFormat dateForm = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             try {
-                List<Users> newList = new ArrayList<>();
                 Date currentDate = dateForm.parse(date); // получили текущее время запроса
                 //симулируем долгий запрос
                 try {
@@ -47,13 +47,11 @@ public class ControllerStatistics  extends ControllerMain{
                     e.printStackTrace();
                 }
 
-                List<Users> usersList = usersRepository.findByTimeChangeGreaterThan(currentDate);
-
-                for (Users users : usersList) {
-                    if (users.getStatus().equals(status))
-                        newList.add(users);
-                }
-                model.addAttribute("result" , listToString(newList));
+                model.addAttribute("result" ,
+                        usersRepository.findByTimeChangeGreaterThan(currentDate).
+                            stream().
+                            filter(u -> u.getStatus().equals(status)).
+                            map(u -> u.toString()));
 
 
             } catch (ParseException e) {

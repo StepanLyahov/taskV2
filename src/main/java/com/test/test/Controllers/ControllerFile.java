@@ -35,7 +35,7 @@ public class ControllerFile extends ControllerMain {
         StringBuilder fileNames = new StringBuilder();
         for (MultipartFile file : files) {
             Path fileNameAndPath = Paths.get(uploadDirectory, file.getOriginalFilename());
-            fileNames.append(file.getOriginalFilename()+" ");
+            fileNames.append(file.getOriginalFilename()).append(" ");
             try {
                 Files.write(fileNameAndPath, file.getBytes());
             } catch (IOException e) {

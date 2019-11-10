@@ -25,7 +25,6 @@ public class Users {
     @Column(name = "secondname")
     private String secondname;
 
-
     @Column(name = "email")
     private String email;
 
