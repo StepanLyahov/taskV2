@@ -10,3 +10,4 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
     List<Users> findByStatus(String status);
     List<Users> findByTimeChangeGreaterThan(Date date);
 }
+
