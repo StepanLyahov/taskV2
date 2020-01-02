@@ -1,41 +1,41 @@
 package com.test.test.Controllers;
 
 
-import com.test.test.model.Users;
+
+
+import com.test.test.model.User;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
-
 @Controller
 public class ControllerUser extends ControllerMain {
 
+    private static final Logger log = Logger.getLogger(ControllerUser.class);
+
     @GetMapping("/main")
-    public String mainn(Model model) {
+    public String main(Model model) {
+        log.info("Запрос на получение главной страници");
         model.addAttribute("name", "");
         return "main";
     }
 
     @GetMapping(value = "/all")
-    public String all(Model model) {
-        model.addAttribute("list", usersRepository.findAll().stream().map(u -> u.toString()));
+    public String getAllUsers(Model model) {
+        log.info("запрос на получение страницы со всеми пользователями");
+        model.addAttribute("list", serviceUser.getAllUsers());
         return "all";
     }
 
     @PostMapping(value = "/main")
-    public String mainPost(@RequestParam String name, @RequestParam String secondname, @RequestParam String email, Model model) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public String saveNewUser(@RequestParam String name, @RequestParam String secondname, @RequestParam String email, Model model) {
+        log.info("Сохранение нового пользователя");
 
-        Users users = new Users(name,secondname,email, "defailt_image", "", null);
-        usersRepository.save(users);
-
-        model.addAttribute("name", users.getId());
+        User user = serviceUser.saveNewUser(name, secondname, email);
+        model.addAttribute("name", user.getId());
 
         return "main";
     }
@@ -47,15 +47,11 @@ public class ControllerUser extends ControllerMain {
     }
 
     @PostMapping(value = "/getUser")
-    public String getUserPost(@RequestParam Integer id, Model model) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public String getUser(@RequestParam Integer id, Model model) {
+        log.info("Получение пользователя по id:" + id);
 
-        Users users = usersRepository.getOne(id);
-        model.addAttribute("name", (users == null) ? "Пользовтель не найден." : users);
+        User user = serviceUser.getUserById(id);
+        model.addAttribute("name", (user == null) ? "Пользовтель не найден." : user);
 
         return "getUser";
     }
@@ -68,30 +64,21 @@ public class ControllerUser extends ControllerMain {
 
     @PostMapping(value = "/setUser")
     public String setUser(@RequestParam Integer id, @RequestParam String status, Model model) {
-        //TODO Переделать процесс обновления информации пользователя
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Users users = usersRepository.getOne(id);
-
-        if (users == null) {
-            model.addAttribute("name", "Пользовтель не найден.");
+        log.info("Изменение пользователя с id:" + id);
+        /*
+        if ("Online".equals(status) || "Offline".equals(status)) {
+            Pair<User, String> pair = serviceUser.changeUserByIdAndStatus(id, status);
+            if (pair.fst == null)
+                model.addAttribute("name", "Пользовтель не найден.");
+            else {
+                model.addAttribute("old_status", pair.snd);
+                model.addAttribute("id", pair.fst.getId());
+                model.addAttribute("new_status", pair.fst.getStatus());
+            }
         } else {
-            if ("Online".equals(status) || "Offline".equals(status)) {
-                model.addAttribute("old_status", users.getStatus());
-                usersRepository.deleteById(id);
-                users.setStatus("Online".equals(status) ? "Online" : "Offline");
-                users.setTimeChange(new Date());
-                usersRepository.save(users);
-            } else
-                model.addAttribute("name", "Введено не верное состояние");
-
-            model.addAttribute("id", users.getId());
-            model.addAttribute("new_status", users.getStatus());
+            model.addAttribute("name", "Введено не верное состояние");
         }
+        */
         return "setUser";
     }
 

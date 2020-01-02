@@ -1,5 +1,6 @@
 package com.test.test.Controllers;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,22 +16,22 @@ import java.nio.file.Paths;
 @Controller
 public class ControllerFile extends ControllerMain {
 
-    private final static String uploadDirectory = System.getProperty("user.dir")+"/uploads";
+    private static final Logger log = Logger.getLogger(ControllerFile.class);
+    public final static String uploadDirectory = System.getProperty("user.dir")+"/uploads";
 
     @GetMapping("/loadImage")
-    public String loadImaage(Model model) {
+    public String loadImage(Model model) {
         return "loadImage";
     }
 
     @PostMapping("/loadImage")
     public String upload(Model model, @RequestParam("files") MultipartFile[] files) {
-
+        log.info("Загружаем файл на сервер");
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
 
         StringBuilder fileNames = new StringBuilder();
         for (MultipartFile file : files) {

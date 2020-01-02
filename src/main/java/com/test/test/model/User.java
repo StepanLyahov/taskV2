@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Entity
 @Data
-public class Users {
+public class User {
 
     @Id
     @GeneratedValue
@@ -35,9 +35,9 @@ public class Users {
     @Column(name = "timeChange")
     private Date timeChange;
 
-    public Users() { }
+    public User() { }
 
-    public Users(String name, String secondname, String email, String uriImage, String status, Date timeChange) {
+    public User(String name, String secondname, String email, String uriImage, String status, Date timeChange) {
         this.name = name;
         this.secondname = secondname;
         this.email = email;
