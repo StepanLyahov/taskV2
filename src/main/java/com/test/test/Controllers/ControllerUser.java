@@ -3,6 +3,7 @@ package com.test.test.Controllers;
 
 
 
+import com.sun.tools.javac.util.Pair;
 import com.test.test.model.User;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -65,7 +66,7 @@ public class ControllerUser extends ControllerMain {
     @PostMapping(value = "/setUser")
     public String setUser(@RequestParam Integer id, @RequestParam String status, Model model) {
         log.info("Изменение пользователя с id:" + id);
-        /*
+
         if ("Online".equals(status) || "Offline".equals(status)) {
             Pair<User, String> pair = serviceUser.changeUserByIdAndStatus(id, status);
             if (pair.fst == null)
@@ -78,7 +79,7 @@ public class ControllerUser extends ControllerMain {
         } else {
             model.addAttribute("name", "Введено не верное состояние");
         }
-        */
+
         return "setUser";
     }
 
